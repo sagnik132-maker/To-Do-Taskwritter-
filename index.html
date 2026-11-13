@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>To-Do Tasker</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #f2fff2, #eef5ff);
+      color: #222;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 30px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+      border: 1px solid black;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #4caf50;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      border: 1px solid black;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    #addButton {
+      background-color: green;
+      color: white;
+    }
+
+    #deleteButton {
+      background-color: red;
+      color: white;
+    }
+
+    #taskList {
+      width: 100%;
+      max-width: 520px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .task {
+      background-color: white;
+      margin: 10px 0;
+      padding: 12px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      user-select: none;
+      transition: 0.2s;
+      touch-action: manipulation;
+    }
+
+    .task.selected {
+      border-color: #4caf50;
+      background-color: #f2fff4;
+    }
+
+    .task.moving {
+      opacity: 0.55;
+      border-color: #777;
+      cursor: grabbing;
+      touch-action: none;
+    }
+
+    .task.pinned {
+      border-color: #d8a400;
+      background-color: #fffbea;
+    }
+
+    .complete {
+      width: 27px;
+      height: 27px;
+      border: 2px solid black;
+      border-radius: 50%;
+      background-color: white;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .complete.done {
+      background-color: grey;
+      color: white;
+    }
+
+    .taskText {
+      flex: 1;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .taskText.done {
+      text-decoration: line-through;
+      color: grey;
+    }
+
+    .reminder {
+      background-color: yellow;
+      color: black;
+      flex-shrink: 0;
+    }
+
+    .reminder.stopped {
+      background-color: grey;
+      color: black;
+      cursor: not-allowed;
+    }
+
+    /* MODERN ACTION MENU */
+
+    #actionMenu {
+      position: fixed;
+      display: none;
+      width: 220px;
+      background: white;
+      border-radius: 16px;
+      padding: 8px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+      border: 1px solid #ddd;
+      z-index: 1000;
+      text-align: left;
+    }
+
+    #actionMenu.show {
+      display: block;
+    }
+
+    .menuTitle {
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #777;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 4px;
+    }
+
+    .menuButton {
+      width: 100%;
+      margin: 2px 0;
+      padding: 12px;
+      background: white;
+      border: none;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    .menuButton:hover {
+      background: #f2f2f2;
+    }
+
+    .menuDelete {
+      color: red;
+    }
+
+    /* REMINDER POPUP */
+
+    #reminderOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    #reminderOverlay.show {
+      display: flex;
+    }
+
+    #reminderPopup {
+      width: 100%;
+      max-width: 380px;
+      background: white;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      animation: popupIn 0.2s ease;
+    }
+
+    @keyframes popupIn {
+
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+    }
+
+    #reminderTitle {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    #reminderMessage {
+      font-size: 17px;
+      color: #555;
+      margin-bottom: 22px;
+      word-break: break-word;
+    }
+
+    #reminderOK {
+      width: 100%;
+      margin: 0;
+      background: #222;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 16px;
+    }
+
+    /* MOVE MESSAGE */
+
+    #moveMessage {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 12px;
+      display: none;
+      z-index: 1500;
+      font-size: 14px;
+    }
+
+    #moveMessage.show {
+      display: block;
+    }
+
+    @media (max-width: 500px) {
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .task {
+        padding: 10px;
+      }
+
+      .taskText {
+        font-size: 15px;
+      }
+
+      .reminder {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <h1>To-Do Task Writter</h1>
+
+  <p class="subtitle">
+    Remember your tasks!
+  </p>
+
+  <input
+    id="taskInput"
+    type="text"
+    placeholder="Write your task"
+  >
+
+  <br><br>
+
+  <button id="addButton">
+    ADD
+  </button>
+
+  <button id="deleteButton">
+    DELETE
+  </button>
+
+  <div id="taskList"></div>
+
+
+  <!-- MODERN TASK MENU -->
+
+  <div id="actionMenu">
+
+    <div class="menuTitle">
+      Task options
+    </div>
+
+    <button
+      id="pinAction"
+      class="menuButton"
+    >
+      Pin
+    </button>
+
+    <button
+      id="moveAction"
+      class="menuButton"
+    >
+      Move
+    </button>
+
+    <button
+      id="deleteAction"
+      class="menuButton menuDelete"
+    >
+      Delete
+    </button>
+
+  </div>
+
+
+  <!-- MOVE MESSAGE -->
+
+  <div id="moveMessage">
+    Drag the selected task to anther position.
+  </div>
+
+
+  <!-- MODERN REMINDER POPUP -->
+
+  <div id="reminderOverlay">
+
+    <div id="reminderPopup">
+
+      <div id="reminderTitle">
+        Task Manager
+      </div>
+
+      <div id="reminderMessage"></div>
+
+      <button id="reminderOK">
+        OK
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const taskInput =
+      document.getElementById("taskInput");
+
+    const addButton =
+      document.getElementById("addButton");
+
+    const deleteButton =
+      document.getElementById("deleteButton");
+
+    const taskList =
+      document.getElementById("taskList");
+
+    const actionMenu =
+      document.getElementById("actionMenu");
+
+    const pinAction =
+      document.getElementById("pinAction");
+
+    const moveAction =
+      document.getElementById("moveAction");
+
+    const deleteAction =
+      document.getElementById("deleteAction");
+
+    const reminderOverlay =
+      document.getElementById("reminderOverlay");
+
+    const reminderMessage =
+      document.getElementById("reminderMessage");
+
+    const reminderOK =
+      document.getElementById("reminderOK");
+
+    const moveMessage =
+      document.getElementById("moveMessage");
+
+
+    let selectedTask = null;
+
+    let movingTask = null;
+
+    let currentSound = null;
+
+    let moveMode = false;
+
+    let movePointerId = null;
+
+
+    /* SELECT TASK */
+
+    function selectTask(task) {
+
+      if (selectedTask !== null) {
+
+        selectedTask.classList.remove(
+          "selected"
+        );
+
+      }
+
+      selectedTask = task;
+
+      selectedTask.classList.add(
+        "selected"
+      );
+
+    }
+
+
+    /* SHOW ACTION MENU */
+
+    function showActionMenu(x, y) {
+
+      actionMenu.classList.add("show");
+
+      const menuWidth = 220;
+
+      const menuHeight = 180;
+
+      let left = x;
+
+      let top = y;
+
+
+      if (
+        left + menuWidth >
+        window.innerWidth
+      ) {
+
+        left =
+          window.innerWidth -
+          menuWidth -
+          10;
+
+      }
+
+
+      if (
+        top + menuHeight >
+        window.innerHeight
+      ) {
+
+        top =
+          window.innerHeight -
+          menuHeight -
+          10;
+
+      }
+
+
+      actionMenu.style.left =
+        Math.max(10, left) + "px";
+
+      actionMenu.style.top =
+        Math.max(10, top) + "px";
+
+    }
+
+
+    /* CLOSE ACTION MENU */
+
+    function closeActionMenu() {
+
+      actionMenu.classList.remove(
+        "show"
+      );
+
+    }
+
+
+    /* LONG PRESS */
+
+    function setupTaskSelection(task) {
+
+      let pressTimer = null;
+
+      let longPress = false;
+
+
+      task.addEventListener(
+        "pointerdown",
+        function(event) {
+
+          if (moveMode) {
+            return;
+          }
+
+          longPress = false;
+
+          pressTimer = setTimeout(
+            function() {
+
+              longPress = true;
+
+              selectTask(task);
+
+              showActionMenu(
+                event.clientX,
+                event.clientY
+              );
+
+            },
+            600
+          );
+
+        }
+      );
+
+
+      task.addEventListener(
+        "pointerup",
+        function() {
+
+          clearTimeout(
+            pressTimer
+          );
+
+        }
+      );
+
+
+      task.addEventListener(
+        "pointercancel",
+        function() {
+
+          clearTimeout(
+            pressTimer
+          );
+
+        }
+      );
+
+
+      task.addEventListener(
+        "click",
+        function() {
+
+          if (longPress) {
+
+            longPress = false;
+
+            return;
+
+          }
+
+          if (!moveMode) {
+
+            selectTask(task);
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* STOP SOUND */
+
+    function stopSound() {
+
+      if (currentSound !== null) {
+
+        try {
+          currentSound.stop();
+        } catch (e) {}
+
+        try {
+          currentSound.disconnect();
+        } catch (e) {}
+
+        currentSound = null;
+
+      }
+
+    }
+
+
+    /* SHOW REMINDER */
+
+    function showReminder(taskText) {
+
+      reminderMessage.textContent =
+        taskText;
+
+      reminderOverlay.classList.add(
+        "show"
+      );
+
+    }
+
+
+    /* CLOSE REMINDER */
+
+    function closeReminder() {
+
+      stopSound();
+
+      reminderOverlay.classList.remove(
+        "show"
+      );
+
+    }
+
+
+    reminderOK.addEventListener(
+      "click",
+      function() {
+
+        closeReminder();
+
+      }
+    );
+
+
+    /* ADD TASK */
+
+    addButton.addEventListener(
+      "click",
+      function() {
+
+        const taskText =
+          taskInput.value.trim();
+
+
+        if (taskText === "") {
+          return;
+        }
+
+
+        const task =
+          document.createElement("div");
+
+        task.className = "task";
+
+
+        const completeButton =
+          document.createElement("button");
+
+        completeButton.className =
+          "complete";
+
+
+        const text =
+          document.createElement("span");
+
+        text.className =
+          "taskText";
+
+        text.textContent =
+          taskText;
+
+
+        const reminderButton =
+          document.createElement("button");
+
+        reminderButton.className =
+          "reminder";
+
+        reminderButton.textContent =
+          "Reminder";
+
+
+        let reminderTimer = null;
+
+        let audioContext = null;
+
+
+        /* COMPLETE */
+
+        completeButton.addEventListener(
+          "click",
+          function(event) {
+
+            event.stopPropagation();
+
+            completeButton.classList.toggle(
+              "done"
+            );
+
+            text.classList.toggle(
+              "done"
+            );
+
+
+            if (
+              completeButton.classList.contains(
+                "done"
+              )
+            ) {
+
+              completeButton.textContent =
+                "✓";
+
+
+              if (
+                reminderTimer !== null
+              ) {
+
+                clearTimeout(
+                  reminderTimer
+                );
+
+                reminderTimer = null;
+
+                stopSound();
+
+
+                if (
+                  audioContext !== null
+                ) {
+
+                  audioContext.close();
+
+                  audioContext = null;
+
+                }
+
+
+                reminderButton.classList.add(
+                  "stopped"
+                );
+
+
+                showCompletionMessage();
+
+              } else {
+
+                reminderButton.classList.add(
+                  "stopped"
+                );
+
+              }
+
+            } else {
+
+              completeButton.textContent =
+                "";
+
+              reminderButton.classList.remove(
+                "stopped"
+              );
+
+            }
+
+          }
+        );
+
+
+        /* REMINDER */
+
+        reminderButton.addEventListener(
+          "click",
+          function(event) {
+
+            event.stopPropagation();
+
+
+            if (
+              completeButton.classList.contains(
+                "done"
+              )
+            ) {
+              return;
+            }
+
+
+            if (
+              reminderTimer !== null
+            ) {
+              return;
+            }
+
+
+            reminderTimer =
+              setTimeout(
+                function() {
+
+                  reminderTimer = null;
+
+
+                  audioContext =
+                    new (
+                      window.AudioContext ||
+                      window.webkitAudioContext
+                    )();
+
+
+                  if (
+                    audioContext.state ===
+                    "suspended"
+                  ) {
+
+                    audioContext.resume();
+
+                  }
+
+
+                  const oscillator =
+                    audioContext.createOscillator();
+
+                  const gainNode =
+                    audioContext.createGain();
+
+
+                  oscillator.type =
+                    "sine";
+
+
+                  oscillator.frequency.setValueAtTime(
+                    800,
+                    audioContext.currentTime
+                  );
+
+
+                  gainNode.gain.setValueAtTime(
+                    0.1,
+                    audioContext.currentTime
+                  );
+
+
+                  oscillator.connect(
+                    gainNode
+                  );
+
+                  gainNode.connect(
+                    audioContext.destination
+                  );
+
+
+                  currentSound =
+                    oscillator;
+
+
+                  oscillator.start();
+
+
+                  showReminder(
+                    taskText
+                  );
+
+
+                },
+                20000
+              );
+
+          }
+        );
+
+
+        task.appendChild(
+          completeButton
+        );
+
+        task.appendChild(
+          text
+        );
+
+        task.appendChild(
+          reminderButton
+        );
+
+
+        taskList.appendChild(
+          task
+        );
+
+
+        setupTaskSelection(
+          task
+        );
+
+
+        taskInput.value = "";
+
+      }
+    );
+
+
+    /* PIN */
+
+    pinAction.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+
+        if (
+          selectedTask === null
+        ) {
+          return;
+        }
+
+
+        selectedTask.classList.toggle(
+          "pinned"
+        );
+
+
+        closeActionMenu();
+
+      }
+    );
+
+
+    /* MOVE */
+
+    moveAction.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+
+        if (
+          selectedTask === null
+        ) {
+          return;
+        }
+
+
+        movingTask =
+          selectedTask;
+
+        moveMode = true;
+
+
+        movingTask.classList.add(
+          "moving"
+        );
+
+
+        moveMessage.classList.add(
+          "show"
+        );
+
+
+        closeActionMenu();
+
+      }
+    );
+
+
+    /* START MOVING */
+
+    taskList.addEventListener(
+      "pointerdown",
+      function(event) {
+
+        if (
+          !moveMode ||
+          movingTask === null
+        ) {
+          return;
+        }
+
+
+        if (
+          !movingTask.contains(
+            event.target
+          )
+        ) {
+          return;
+        }
+
+
+        if (
+          event.target.closest(
+            ".complete"
+          ) ||
+          event.target.closest(
+            ".reminder"
+          )
+        ) {
+          return;
+        }
+
+
+        movePointerId =
+          event.pointerId;
+
+
+        movingTask.setPointerCapture(
+          movePointerId
+        );
+
+
+        event.preventDefault();
+
+      }
+    );
+
+
+    /* MOVE TASK */
+
+    taskList.addEventListener(
+      "pointermove",
+      function(event) {
+
+        if (
+          !moveMode ||
+          movingTask === null ||
+          movePointerId !==
+          event.pointerId
+        ) {
+          return;
+        }
+
+
+        event.preventDefault();
+
+
+        const tasks =
+          Array.from(
+            taskList.children
+          );
+
+
+        let targetTask = null;
+
+
+        for (
+          let i = 0;
+          i < tasks.length;
+          i++
+        ) {
+
+          const task =
+            tasks[i];
+
+
+          if (
+            task === movingTask
+          ) {
+            continue;
+          }
+
+
+          const rect =
+            task.getBoundingClientRect();
+
+
+          const middle =
+            rect.top +
+            rect.height / 2;
+
+
+          if (
+            event.clientY < middle
+          ) {
+
+            targetTask =
+              task;
+
+            break;
+
+          }
+
+        }
+
+
+        if (
+          targetTask !== null
+        ) {
+
+          taskList.insertBefore(
+            movingTask,
+            targetTask
+          );
+
+        } else {
+
+          taskList.appendChild(
+            movingTask
+          );
+
+        }
+
+      }
+    );
+
+
+    /* FINISH MOVE */
+
+    document.addEventListener(
+      "pointerup",
+      function(event) {
+
+        if (
+          !moveMode ||
+          movingTask === null
+        ) {
+          return;
+        }
+
+
+        if (
+          movePointerId !==
+          event.pointerId
+        ) {
+          return;
+        }
+
+
+        try {
+
+          movingTask.releasePointerCapture(
+            movePointerId
+          );
+
+        } catch (e) {}
+
+
+        movingTask.classList.remove(
+          "moving"
+        );
+
+
+        movingTask.classList.add(
+          "selected"
+        );
+
+
+        movingTask = null;
+
+        movePointerId = null;
+
+        moveMode = false;
+
+
+        moveMessage.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+
+    /* DELETE FROM MENU */
+
+    deleteAction.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+
+        if (
+          selectedTask === null
+        ) {
+          return;
+        }
+
+
+        selectedTask.remove();
+
+        selectedTask = null;
+
+        movingTask = null;
+
+        moveMode = false;
+
+
+        moveMessage.classList.remove(
+          "show"
+        );
+
+
+        closeActionMenu();
+
+      }
+    );
+
+
+    /* DELETE BUTTON */
+
+    deleteButton.addEventListener(
+      "click",
+      function() {
+
+        if (
+          selectedTask !== null
+        ) {
+
+          selectedTask.remove();
+
+          selectedTask = null;
+
+          return;
+
+        }
+
+
+        if (
+          taskList.lastElementChild
+        ) {
+
+          taskList.lastElementChild.remove();
+
+        }
+
+      }
+    );
+
+
+    /* CLOSE MENU WHEN CLICKING OUTSIDE */
+
+    document.addEventListener(
+      "click",
+      function(event) {
+
+        if (
+          !actionMenu.contains(
+            event.target
+          )
+        ) {
+
+          closeActionMenu();
+
+        }
+
+      }
+    );
+
+
+    /* COMPLETION MESSAGE */
+
+    function showCompletionMessage() {
+
+      reminderMessage.textContent =
+        "Task is completed and the reminder has stopped.";
+
+      reminderOverlay.classList.add(
+        "show"
+      );
+
+    }
+
+  </script>
+
+</body>
+
+  </html>
