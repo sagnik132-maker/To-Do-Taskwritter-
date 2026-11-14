@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>To-Do Task Writter - User Manual</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(
+                135deg,
+                lightgreen,
+                lightblue
+            );
+            color: #222;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+        header p {
+            color: #444;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+            padding: 15px;
+        }
+
+        .navigation {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .navigation h2 {
+            margin-top: 0;
+        }
+
+        .navigation a {
+            display: block;
+            padding: 9px;
+            color: #167342;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .navigation a:hover {
+            background: #eaffea;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            scroll-margin-top: 15px;
+        }
+
+        .section h2 {
+            color: #21834b;
+            margin-top: 0;
+            border-bottom: 2px solid #d9f0df;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #276b91;
+            margin-top: 22px;
+        }
+
+        .section p {
+            line-height: 1.7;
+        }
+
+        .section li {
+            line-height: 1.8;
+            margin-bottom: 5px;
+        }
+
+        .note {
+            background: #f0fff0;
+            border-left: 4px solid #4caf50;
+            padding: 12px;
+            border-radius: 7px;
+            margin-top: 15px;
+        }
+
+        .warning {
+            background: #fff8e5;
+            border-left: 4px solid #d8a400;
+            padding: 12px;
+            border-radius: 7px;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 10px;
+            color: #333;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (max-width: 500px) {
+
+            header h1 {
+                font-size: 27px;
+            }
+
+            .section {
+                padding: 17px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+        <h1>To-Do Task Writter</h1>
+        <p>Official User Manual</p>
+    </header>
+
+
+    <main class="container">
+
+        <!-- TABLE OF CONTENTS -->
+
+        <nav class="navigation">
+
+            <h2>Table of Contents</h2>
+
+            <a href="#introduction">1. Introduction</a>
+
+            <a href="#input">2. Input Text or Adding Task</a>
+
+            <a href="#complete">3. Complete Task</a>
+
+            <a href="#editing">4. Adding and Deleting Tasks</a>
+
+            <a href="#reminder">5. Using Reminder</a>
+
+            <a href="#menu">6. Using Menu</a>
+
+        </nav>
+
+
+        <!-- INTRODUCTION -->
+
+        <section class="section" id="introduction">
+
+            <h2>1. Introduction</h2>
+
+            <p>
+                Welcome to <b>To-Do Task Writter!</b>
+            </p>
+
+            <p>
+                To-Do Task Writter is a task-management
+                application designed to help users remember,
+                organise and complete their daily activities.
+            </p>
+
+            <p>
+                It provides features such as task creation,
+                completion, reminders, pinning, moving and
+                deleting tasks.
+            </p>
+
+            <p>
+                This manual explains how to use the different
+                features of the application step by step.
+            </p>
+
+        </section>
+
+
+        <!-- INPUT AND ADDING TASK -->
+
+        <section class="section" id="input">
+
+            <h2>2. Input Text or Adding Task</h2>
+
+            <p>
+                The input text field allows users to write
+                new tasks.
+            </p>
+
+            <h3>How to add a task:</h3>
+
+            <ol>
+                <li>Find the input field labelled
+                    "Write your task".</li>
+
+                <li>Type the task you want to remember.</li>
+
+                <li>Press the green <b>ADD</b> button.</li>
+
+                <li>Your task will appear in the task list.</li>
+            </ol>
+
+            <div class="note">
+                <b>Example:</b> Write "Complete mathematics
+                homework" and press ADD.
+            </div>
+
+            <div class="warning">
+                <b>Note:</b> Empty tasks cannot be added.
+            </div>
+
+        </section>
+
+
+        <!-- COMPLETE TASK -->
+
+        <section class="section" id="complete">
+
+            <h2>3. Complete Task</h2>
+
+            <p>
+                The Complete feature helps users identify
+                tasks that have been finished.
+            </p>
+
+            <h3>How to complete a task:</h3>
+
+            <ol>
+                <li>Find the task you have finished.</li>
+
+                <li>Press the circular button on its left side.</li>
+
+                <li>A tick mark will appear.</li>
+
+                <li>The task text will become crossed out.</li>
+            </ol>
+
+            <p>
+                This indicates that the task has been completed.
+            </p>
+
+            <div class="note">
+                <b>Tip:</b> Press the circular button again
+                to mark the task as unfinished.
+            </div>
+
+            <p>
+                When a task is completed, its active reminder
+                is stopped and the Reminder button becomes
+                disabled.
+            </p>
+
+        </section>
+
+
+        <!-- ADDING AND DELETING TASKS -->
+
+        <section class="section" id="editing">
+
+            <h2>4. Adding and Deleting Tasks</h2>
+
+            <p>
+                This section explains how to add new tasks
+                and remove unwanted tasks.
+            </p>
+
+            <h3>A. Adding a Task</h3>
+
+            <ol>
+                <li>Find the input text field.</li>
+
+                <li>Enter your new task.</li>
+
+                <li>Press the ADD button.</li>
+
+                <li>The new task will appear in your list.</li>
+            </ol>
+
+            <h3>B. Deleting a Task</h3>
+
+            <p>
+                There are two ways to delete tasks.
+            </p>
+
+            <h3>Method 1: Using the Task Menu</h3>
+
+            <ol>
+                <li>Find the task you want to delete.</li>
+
+                <li>Click and hold the task for approximately
+                    600 milliseconds.</li>
+
+                <li>The task menu will appear.</li>
+
+                <li>Select the <b>Delete</b> option.</li>
+
+                <li>The selected task will be removed.</li>
+            </ol>
+
+            <h3>Method 2: Using the DELETE Button</h3>
+
+            <ol>
+                <li>Select a task by clicking it.</li>
+
+                <li>Press the red <b>DELETE</b> button.</li>
+
+                <li>The selected task will be removed.</li>
+            </ol>
+
+            <div class="warning">
+                <b>Important:</b> If no task is selected,
+                the DELETE button removes the last task
+                in the list.
+            </div>
+
+        </section>
+
+
+        <!-- REMINDER -->
+
+        <section class="section" id="reminder">
+
+            <h2>5. Using Reminder</h2>
+
+            <p>
+                The Reminder feature helps users remember
+                their tasks.
+            </p>
+
+            <h3>How to activate a reminder:</h3>
+
+            <ol>
+                <li>Find the task for which you want a reminder.</li>
+
+                <li>Press its yellow <b>Reminder</b> button.</li>
+
+                <li>Wait for 20 seconds.</li>
+
+                <li>A reminder popup will appear with the task name.</li>
+
+                <li>A sound will also play.</li>
+
+                <li>Press <b>OK</b> to close the popup
+                    and stop the sound.</li>
+            </ol>
+
+            <div class="note">
+                <b>Important points:</b>
+
+                <ul>
+                    <li>Each task has its own Reminder button.</li>
+
+                    <li>A reminder cannot be activated
+                        for a completed task.</li>
+
+                    <li>A second reminder cannot be started
+                        while the first one is active.</li>
+
+                    <li>Completing a task stops its
+                        active reminder.</li>
+                </ul>
+            </div>
+
+        </section>
+
+
+        <!-- MENU -->
+
+        <section class="section" id="menu">
+
+            <h2>6. Using Menu</h2>
+
+            <p>
+                The task menu provides three options for
+                managing individual tasks.
+            </p>
+
+            <h3>How to open the menu:</h3>
+
+            <ol>
+                <li>Find the required task.</li>
+
+                <li>Click and hold it for approximately
+                    600 milliseconds.</li>
+
+                <li>The menu will appear near your
+                    pointer or touch position.</li>
+            </ol>
+
+            <h3>A. Pin</h3>
+
+            <p>
+                The Pin option highlights an important task.
+            </p>
+
+            <p>
+                When pinned, the task gets a golden border
+                and a light yellow background.
+            </p>
+
+            <p>
+                Press Pin again to remove the pin.
+            </p>
+
+
+            <h3>B. Move</h3>
+
+            <p>
+                The Move option allows users to change
+                the position of a task.
+            </p>
+
+            <h3>How to move a task:</h3>
+
+            <ol>
+                <li>Open the task menu.</li>
+
+                <li>Select <b>Move</b>.</li>
+
+                <li>A message will appear asking you
+                    to drag the selected task.</li>
+
+                <li>Drag the task to the required position.</li>
+
+                <li>Release it to finish moving.</li>
+            </ol>
+
+
+            <h3>C. Delete</h3>
+
+            <p>
+                The Delete option removes the selected
+                task completely.
+            </p>
+
+            <p>
+                Open the task menu and select Delete
+                to remove the task.
+            </p>
+
+            <div class="warning">
+                <b>Remember:</b> Delete is the last option
+                in the task menu.
+            </div>
+
+            <h3>Menu Order</h3>
+
+            <ol>
+                <li>Pin</li>
+                <li>Move</li>
+                <li>Delete</li>
+            </ol>
+
+        </section>
+
+
+        <!-- CONCLUSION -->
+
+        <section class="section">
+
+            <h2>Conclusion</h2>
+
+            <p>
+                To-Do Task Writter provides an easy way
+                to manage everyday activities.
+            </p>
+
+            <p>
+                Users can create tasks, mark them as
+                completed, set reminders and organise
+                their task list using the Pin and Move options.
+            </p>
+
+            <p>
+                We hope this manual helps you understand
+                and use To-Do Task Writter.
+            </p>
+
+            <h3>Thank you for using To-Do Task Writter!</h3>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>To-Do Task Writter | User Manual</p>
+    </footer>
+
+</body>
+
+  </html>
+
+  
